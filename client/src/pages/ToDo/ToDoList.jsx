@@ -19,6 +19,11 @@ function ToDoList() {
   const [updatedTitle, setUpdatedTitle] = useState('');
   const [updatedDescription, setUpdatedDescription] = useState('');
   const [updatedStatus, setUpdatedStatus] = useState('');
+  const [currentTaskType, setCurrentTaskType] = useState("incomplete");
+  const [completedToDo, setCompletedToDo] = useState([]);
+  const [incompletedToDo, setIncompletedToDo] = useState([]);
+  const [currentToDoTask, setCurrentToDoTask] = useState([]);
+
   const navigate = useNavigate();
 
   const getAllToDo = async () => {
@@ -55,6 +60,18 @@ function ToDoList() {
       navigate('/login');
     }
   }, [navigate]);
+
+  useEffect (() => {
+    const incomplete = allToDo.filter((item) => item.isCompleted === false); 
+    const complete = allToDo.filter((item) => item.isCompleted === true);
+    setIncompletedToDo(incomplete);
+    setCompletedToDo(complete);
+    if(currentTaskType === 'incomplete'){
+      setCurrentToDoTask(incomplete);
+    }else{
+      setCurrentToDoTask(complete);
+    }	
+  }, [allToDo]);
 
   const handleSubmitTask = async () => {
     setLoading(true);
@@ -141,6 +158,17 @@ function ToDoList() {
       message.error(getErrorMessage(err));
     }
   };
+
+  const handleTypeChange = (value) => {
+    console.log(value);
+    setCurrentTaskType(value);
+    if(value === 'incomplete'){
+      setCurrentToDoTask(incompletedToDo);
+    }else{
+      setCurrentToDoTask(completedToDo);
+    }
+  }
+
   return (
     <>
       <Navbar activate={'MyTask'} />
@@ -150,12 +178,22 @@ function ToDoList() {
           <Input style={{ width: '50%' }} placeholder='search your task here' />
           <div>
             <Button onClick={() => setIsAdding(true)} type="primary" size="large">Add Task</Button>
+            <Select
+              value = {currentTaskType}
+              style = {{width:180, marginLeft: '1rem'}}
+              onChange={handleTypeChange}
+              size = "large"
+              options={[
+                {value:"incomplete", label:'Incomplete'},
+                {value:"complete", label:'Completed'},
+              ]}
+            />          
           </div>
         </div>
         <Divider />
 
         <div className={styles.toDoListCardWrapper}>
-          {allToDo.map((item) => {
+          {currentToDoTask.map((item) => {
             return (
               <div key={item?._id} className={styles.toDoCard}>
                 <div>
