@@ -14,6 +14,11 @@ function ToDoList() {
   const [isAdding, setIsAdding] = useState(false);
   const [loading, setLoading] = useState(false);
   const [allToDo, setAllToDo] = useState([]);
+  const [currentEditItem, setCurrentEditItem] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [updatedTitle, setUpdatedTitle] = useState('');
+  const [updatedDescription, setUpdatedDescription] = useState('');
+  const [updatedStatus, setUpdatedStatus] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -70,14 +75,39 @@ function ToDoList() {
 
   const handleEdit = (item) => {
     console.log(item);
+    setCurrentEditItem(item);
+    setUpdatedTitle(item?.title);
+    setUpdatedDescription(item?.description);
+    setUpdatedStatus(item?.isCompleted);
+    setIsEditing(true);
   };
   const handleDelete = (item) => {
     console.log(item);
   };
-  const handleUpdate = (id) => {
+  const handleUpdateStatus = (id) => {
     console.log(id);
   };
 
+  const handleUpdateTask = async (id, status) => {
+    try {
+      setLoading(true);
+      const data = {
+        title: updatedTitle,
+        description: updatedDescription,
+        isCompleted: updatedStatus,
+      };
+      console.log(data);
+      const response = await ToDoServices.updateToDo(currentEditItem?._id, data);
+      console.log(response.data);
+      setLoading(false);
+      setIsEditing(false);
+      
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+      message.error(getErrorMessage(err));
+    }
+  };
   return (
     <>
       <Navbar activate={'MyTask'} />
@@ -108,7 +138,7 @@ function ToDoList() {
                   <div className={styles.toDoFooterAction}>
                     <Tooltip title="Edit Task?"><EditOutlined onClick={() => handleEdit(item)} className={styles.actionIcon} /></Tooltip>
                     <Tooltip title="Delete Task?"><DeleteOutlined onClick={() => handleDelete(item)} style={{ color: 'red' }} className={styles.actionIcon} /></Tooltip>
-                    {item?.isCompleted ? <Tooltip title="Mark as Incomplete"><CheckCircleFilled onClick={() => handleUpdate(item._id, false)} style={{ color: 'green' }} className={styles.actionIcon} /></Tooltip> : <Tooltip title="Mark as Completed"><CheckCircleOutlined onClick={() => handleUpdate(item._id, true)} className={styles.actionIcon} /></Tooltip>}
+                    {item?.isCompleted ? <Tooltip title="Mark as Incomplete"><CheckCircleFilled onClick={() => handleUpdateStatus(item._id, false)} style={{ color: 'green' }} className={styles.actionIcon} /></Tooltip> : <Tooltip title="Mark as Completed"><CheckCircleOutlined onClick={() => handleUpdateStatus(item._id, true)} className={styles.actionIcon} /></Tooltip>}
                   </div>
                 </div>
 
@@ -135,6 +165,28 @@ function ToDoList() {
             onChange={(e) => setDescription(e.target.value)}
           />
         </Modal>
+        <Modal confirmLoading={loading} title={`Update ${currentEditItem.title}`} open={isEditing} onOk={handleUpdateTask} onCancel={()=>setIsEditing(false)}>
+        <Input style={{marginBottom:'1rem'}} placeholder='Updated Title' value={updatedTitle} onChange={(e)=>setUpdatedTitle(e.target.value)} />
+        <Input.TextArea style={{marginBottom:'1rem'}} placeholder='Updated Description' value={updatedDescription} onChange={(e)=>setUpdatedDescription(e.target.value)} />
+        <Select
+      
+      onChange={(value)=>setUpdatedStatus(value)}
+      value={updatedStatus}
+      options={[
+        
+        {
+          value: false,
+          label: 'Not Completed',
+        },
+
+        {
+          value: true,
+          label: 'Completed',
+        },
+     
+      ]}
+    />
+      </Modal>
       </section>
     </>
   );
