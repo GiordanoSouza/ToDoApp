@@ -11,21 +11,22 @@ const authHeaders = () => {
 }
 }
 
+
 const createToDo = (data)=>{
     return axios.post(SERVER_URL+'/create-to-do',data, authHeaders());
 }
 
 const deleteToDo = (Id)=>{
-    return axios.post(SERVER_URL+'/delete-to-do/'+Id, authHeaders());
+    return axios.delete(SERVER_URL+'/delete-to-do/'+Id, authHeaders());
 }
 
 
 const getAllToDo = (userId)=>{
-    return axios.post(SERVER_URL+'/get-all-to-do/'+userId, authHeaders());
+    return axios.get(SERVER_URL+'/get-all-to-do/'+userId, authHeaders());
 }
 
 const updateToDo = (Id, data)=>{
-    return axios.post(SERVER_URL+'/update-to-do/'+Id, data, authHeaders());
+    return axios.patch(SERVER_URL+'/update-to-do/'+Id, data, authHeaders());
 }
 
 
