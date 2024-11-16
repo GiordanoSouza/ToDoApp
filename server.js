@@ -9,6 +9,21 @@ require('dotenv').config();
 
 const PORT = process.env.PORT || 5000;
 
+app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          fontSrc: ["'self'", "data:", "https:", "http:"],
+          imgSrc: ["'self'", "data:", "https:", "http:"],
+          scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          connectSrc: ["'self'"],
+        },
+      },
+    })
+  );
+
 app.use(cors());
 app.use(express.json());
 
