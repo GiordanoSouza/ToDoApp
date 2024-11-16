@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getUserDetails } from '../util/GetUser';
 
 
-const SERVER_URL = 'http://localhost:5000/api/todo';
+const SERVER_URL = 'http://18.232.138.207:5800/api/todo';
 
 const authHeaders = () => {
     let userToken = getUserDetails()?.token;
